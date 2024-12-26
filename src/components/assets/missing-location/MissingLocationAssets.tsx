@@ -74,7 +74,14 @@ export default function MissingLocationAssets() {
     [images]
   );
 
-  const handleClick = (idx: number) => setIndex(idx);
+  const handleClick = (idx: number, asset: IAsset) => {
+    if (selectedIds.length > 0)
+    {
+      handleSelect(idx, asset);
+    }
+    else
+      setIndex(idx);
+  };
 
   const handleSelect = (_idx: number, asset: IAsset) => {
     const isPresent = selectedIds.includes(asset.id);
