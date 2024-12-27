@@ -29,6 +29,8 @@ export default function MissingLocationAssets() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const [lastClickedIndex, setLastClickedIndex] = useState<number | null>(null);
+
   const [index, setIndex] = useState(-1);
 
   const fetchAssets = async () => {
@@ -74,16 +76,40 @@ export default function MissingLocationAssets() {
     [images]
   );
 
-  const handleClick = (idx: number) => setIndex(idx);
+  const handleClick = (idx: number, asset: IAsset, ev: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    if (selectedIds.length > 0) {
+      handleSelect(idx, asset, ev);
+    }
+    else
+      setIndex(idx);
+  };
 
-  const handleSelect = (_idx: number, asset: IAsset) => {
-    const isPresent = selectedIds.includes(asset.id);
-    if (isPresent) {
-      updateContext({
-        selectedIds: selectedIds.filter((id) => id !== asset.id),
-      });
-    } else {
-      updateContext({ selectedIds: [...selectedIds, asset.id] });
+  const handleSelect = (idx: number, asset: IAsset, ev: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    if (ev.shiftKey && lastClickedIndex !== null) {
+      // Select range between last clicked and current
+      const start = Math.min(lastClickedIndex, idx);
+      const end = Math.max(lastClickedIndex, idx);
+
+      for (let i = start; i <= end; i++) {
+        const asset = images[i];
+        if (!selectedIds.includes(asset.id)) {
+          selectedIds.push(asset.id);
+        }
+      }
+
+      setLastClickedIndex(idx);
+    }
+    else {
+      const isPresent = selectedIds.includes(asset.id);
+      if (isPresent) {
+        updateContext({
+          selectedIds: selectedIds.filter((id) => id !== asset.id),
+        });
+        setLastClickedIndex(null);
+      } else {
+        updateContext({ selectedIds: [...selectedIds, asset.id] });
+        setLastClickedIndex(idx);
+      }
     }
   };
 
@@ -123,9 +149,9 @@ export default function MissingLocationAssets() {
       <div className="w-full overflow-y-auto max-h-[calc(100vh-60px)]">
         <Gallery
           images={images}
-          onClick={handleClick}
+          onClick={(idx, asset, ev) => handleClick(idx, asset, ev)}
           enableImageSelection={true}
-          onSelect={handleSelect}
+          onSelect={(idx, asset, ev) => handleSelect(idx, asset, ev)}
           thumbnailImageComponent={LazyGridImage}
           tagStyle={{
             color: "white",
