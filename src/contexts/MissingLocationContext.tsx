@@ -1,3 +1,4 @@
+import { IMissingLocationDatesResponse } from "@/handlers/api/asset.handler";
 import { IAsset } from "@/types/asset";
 import { createContext, useContext } from "react";
 
@@ -7,6 +8,7 @@ export interface IMissingLocationConfig {
   assets: IAsset[];
   sort: "fileOriginalDate";
   sortOrder: "asc"|"desc";
+  dates: IMissingLocationDatesResponse[];
 }
 
 export interface MissingLocationContext extends IMissingLocationConfig {
@@ -14,6 +16,7 @@ export interface MissingLocationContext extends IMissingLocationConfig {
 }
 const MissingLocationContext = createContext<MissingLocationContext>({
   startDate: undefined,
+  dates: [],
   selectedIds: [],
   assets: [],
   updateContext: () => { },
