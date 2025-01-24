@@ -116,7 +116,7 @@ export default function MissingLocations() {
               {config.selectedIds.length} Selected
             </p>
             <div className="flex items-center gap-2">
-              {config.selectedIds.length === config.assets.length ? (
+              {config.selectedIds.length > 0 ? (
                 <Button
                   variant={"outline"}
                   size={"sm"}
